@@ -19,7 +19,7 @@ public:
     QNetworkAccessManager* mgr;
     ~MainWindow();
     QString address;
-    QTimer *timer;
+
 
 public slots:
     void replyFinished(QNetworkReply *reply);
@@ -66,6 +66,9 @@ private:
     void request(QString);
     QGraphicsScene scene;
     void camcmd(QString);
+    QTimer *timeout;
+    int retryCount;
+    bool streaming;
 };
 
 #endif // MAINWINDOW_H

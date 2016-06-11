@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QTimer>
+#include <QMessageBox>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -20,9 +21,10 @@ MainWindow::MainWindow(QWidget *parent) :
     StreamDecoder *decoder = new StreamDecoder();
     connect(decoder,SIGNAL(newImage(QPixmap)),this,SLOT(newImage(QPixmap)));
     ui->videoFrame->setScene(&scene);
-    timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(refreshStream()));
 
+    timeout = new QTimer(this);
+    connect(timeout, SIGNAL(timeout()), this, SLOT(refreshStream()));
+    retryCount=0;
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +42,7 @@ void MainWindow::replyFinished(QNetworkReply* reply){
         qDebug() << reply->readAll();
 }
 
+
 void MainWindow::request(QString reqString){
 
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(reqString)));
@@ -50,12 +53,18 @@ void MainWindow::on_connectButton_clicked()
     // create custom temporary event loop on stack
     address = ui->lineEdit->text();
     request("http://"+address+"/cam.cgi?mode=getinfo&type=capability");
-    request("http://"+address+"/cam.cgi?mode=startstream&value=49199");
-    timer->start(10000);
+    streaming=true;
+    timeout->start(300);
 }
 void MainWindow::refreshStream(){
-   // request("http://"+address+"/cam.cgi?mode=stopstream");
-    request("http://"+address+"/cam.cgi?mode=startstream&value=49199");
+    if(retryCount++ > 10 && streaming){
+        timeout->stop();
+        streaming=false;
+        QMessageBox::critical(0, QString("Stream Error"), QString("Streaming timeout. Click Connect to retry."), QMessageBox::Ok);
+    }else{
+        qDebug() << "Starting stream";
+        request("http://"+address+"/cam.cgi?mode=startstream&value=49199");
+    }
 }
 
 void MainWindow::camcmd(QString cmd){
@@ -63,9 +72,13 @@ void MainWindow::camcmd(QString cmd){
 }
 
 void MainWindow::newImage(QPixmap image){
+    retryCount=0;
+    timeout->stop();
     scene.clear();
     scene.addPixmap(image);
     ui->videoFrame->update();
+    if(streaming)
+        timeout->start(1000);
 }
 
 void MainWindow::zoomStop()
@@ -115,26 +128,20 @@ void MainWindow::on_teleFast_released()
 void MainWindow::on_videoModeButton_clicked()
 {
     camcmd("recmode");
-    request("http://"+address+"/cam.cgi?mode=startstream&value=49199");
-    timer->start(10000);
+    refreshStream();
 }
 
 void MainWindow::on_pictureModeButton_clicked()
 {
-    request("http://"+address+"/cam.cgi?mode=stopstream");
     camcmd("pictmode");
-    request("http://"+address+"/cam.cgi?mode=startstream&value=49199");
-    timer->stop();
+    refreshStream();
 }
 
 void MainWindow::on_playModeButton_clicked()
 {
     request("http://"+address+"/cam.cgi?mode=stopstream");
     camcmd("playmode");
-    timer->stop();
 }
-
-
 
 void MainWindow::on_recButton_clicked()
 {

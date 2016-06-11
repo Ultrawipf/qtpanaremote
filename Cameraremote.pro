@@ -6,7 +6,8 @@
 
 QT       += core gui
 QT       += network
-CONFIG += c++11
+CONFIG += c++11 plugin static
+CONFIG += staticlib c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Cameraremote

@@ -25,7 +25,11 @@ void StreamDecoder::readyRead(){
     socket->readDatagram(buf.data(), buf.size(),
                              &sender, &senderPort);
     buffer.append(buf);
-
+    if(buffer.size()>2000000){
+        buffer.clear();
+        qDebug() << "Debuff";
+        return;
+    }
     //Search for jpeg markers
     QByteArray sb = QByteArray::fromHex("ffd8");
     QByteArray eb = QByteArray::fromHex("ffd9");
