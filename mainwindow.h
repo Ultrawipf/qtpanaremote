@@ -61,6 +61,9 @@ private slots:
 
     void on_shutDownButton_clicked();
 
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
 private:
     Ui::MainWindow *ui;
     void request(QString);

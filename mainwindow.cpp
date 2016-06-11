@@ -9,6 +9,8 @@
 #include <QUrlQuery>
 #include <QTimer>
 #include <QMessageBox>
+#include <QKeyEvent>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -50,6 +52,7 @@ void MainWindow::request(QString reqString){
 
 void MainWindow::on_connectButton_clicked()
 {
+    retryCount=0;
     // create custom temporary event loop on stack
     address = ui->lineEdit->text();
     request("http://"+address+"/cam.cgi?mode=getinfo&type=capability");
@@ -63,6 +66,8 @@ void MainWindow::refreshStream(){
         QMessageBox::critical(0, QString("Stream Error"), QString("Streaming timeout. Click Connect to retry."), QMessageBox::Ok);
     }else{
         qDebug() << "Starting stream";
+        if(streaming && !timeout->isActive())
+            timeout->start(1000);
         request("http://"+address+"/cam.cgi?mode=startstream&value=49199");
     }
 }
@@ -72,13 +77,60 @@ void MainWindow::camcmd(QString cmd){
 }
 
 void MainWindow::newImage(QPixmap image){
+    if(!streaming)
+        return;
     retryCount=0;
     timeout->stop();
     scene.clear();
     scene.addPixmap(image);
     ui->videoFrame->update();
-    if(streaming)
-        timeout->start(1000);
+    timeout->start(1000);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event){
+
+
+    if(event->isAutoRepeat())
+        return;
+    switch(event->key()){
+        case Qt::Key_A:
+            camcmd("wide-fast");
+            break;
+        case Qt::Key_S:
+            camcmd("wide-normal");
+            break;
+        case Qt::Key_D:
+            camcmd("tele-normal");
+            break;
+        case Qt::Key_F:
+            camcmd("tele-fast");
+            break;
+        case Qt::Key_R:
+            camcmd("recstart");
+            break;
+        case Qt::Key_Q:
+            camcmd("recstop");
+            break;
+        case Qt::Key_P:
+            camcmd("capture");
+            break;
+    break;
+    }
+
+}
+void MainWindow::keyReleaseEvent(QKeyEvent *event){
+    if(event->isAutoRepeat())
+        return;
+    switch(event->key()){
+        case Qt::Key_A:
+        case Qt::Key_S:
+        case Qt::Key_D:
+        case Qt::Key_F:
+            zoomStop();
+            break;
+
+
+    }
 }
 
 void MainWindow::zoomStop()
@@ -140,6 +192,11 @@ void MainWindow::on_pictureModeButton_clicked()
 void MainWindow::on_playModeButton_clicked()
 {
     request("http://"+address+"/cam.cgi?mode=stopstream");
+    streaming = false;
+    timeout->stop();
+    scene.clear();
+    scene.addText("Play Mode active.");
+    ui->videoFrame->update();
     camcmd("playmode");
 }
 

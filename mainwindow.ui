@@ -60,7 +60,7 @@
      <rect>
       <x>10</x>
       <y>130</y>
-      <width>320</width>
+      <width>323</width>
       <height>25</height>
      </rect>
     </property>
@@ -68,10 +68,7 @@
      <item>
       <widget class="QPushButton" name="wideFast">
        <property name="text">
-        <string>Zoom out fast</string>
-       </property>
-       <property name="shortcut">
-        <string>W</string>
+        <string>Wide fast (A)</string>
        </property>
        <property name="autoRepeat">
         <bool>false</bool>
@@ -81,10 +78,7 @@
      <item>
       <widget class="QPushButton" name="wideSlow">
        <property name="text">
-        <string>Zoom out</string>
-       </property>
-       <property name="shortcut">
-        <string>E</string>
+        <string>Wide (S)</string>
        </property>
        <property name="autoRepeat">
         <bool>false</bool>
@@ -94,10 +88,7 @@
      <item>
       <widget class="QPushButton" name="teleSlow">
        <property name="text">
-        <string>Zoom in</string>
-       </property>
-       <property name="shortcut">
-        <string>T</string>
+        <string>Tele (D)</string>
        </property>
        <property name="autoRepeat">
         <bool>false</bool>
@@ -107,10 +98,7 @@
      <item>
       <widget class="QPushButton" name="teleFast">
        <property name="text">
-        <string>Zoom in fast</string>
-       </property>
-       <property name="shortcut">
-        <string>Z</string>
+        <string>Tele fast (F)</string>
        </property>
        <property name="autoRepeat">
         <bool>false</bool>
@@ -157,7 +145,7 @@
      <rect>
       <x>10</x>
       <y>90</y>
-      <width>239</width>
+      <width>250</width>
       <height>25</height>
      </rect>
     </property>
@@ -165,30 +153,21 @@
      <item>
       <widget class="QPushButton" name="recButton">
        <property name="text">
-        <string>Record</string>
-       </property>
-       <property name="shortcut">
-        <string>R</string>
+        <string>Record (R)</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="recstopButton">
        <property name="text">
-        <string>Stop Record</string>
-       </property>
-       <property name="shortcut">
-        <string>S</string>
+        <string>Stop Record (Q)</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pictureButton">
        <property name="text">
-        <string>Picture</string>
-       </property>
-       <property name="shortcut">
-        <string>P</string>
+        <string>Picture (P)</string>
        </property>
       </widget>
      </item>
